@@ -1,0 +1,20 @@
+# Apache configuration for Qubrix OS SPA and API routing
+Options -Indexes +FollowSymLinks
+RewriteEngine On
+RewriteBase /
+
+# 1. Protect database directory or sqlite files from direct browser access
+RewriteRule ^db/.*$ - [F,L]
+RewriteRule \.(sqlite|db)$ - [F,L]
+
+# 2. Route API calls to PHP backend if api/index.php exists
+RewriteCond %{DOCUMENT_ROOT}/api/index.php -f
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# 3. If file or folder exists, serve directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 4. Route everything else to index.html for Single Page App router
+RewriteRule ^ index.html [L]
